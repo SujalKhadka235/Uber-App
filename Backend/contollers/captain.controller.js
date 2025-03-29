@@ -1,6 +1,7 @@
 const captainModel = require("../models/captain.model");
 const { createCaptain } = require("../services/captain.service");
 const { validationResult } = require("express-validator");
+const blackListTokenModel = require("../models/blackListToken.model");
 module.exports.registerCaptain = async (req, res, next) => {
   const error = validationResult(req);
   if (!error.isEmpty()) {
@@ -63,9 +64,21 @@ module.exports.loginCaptain = async (req, res, next) => {
     return res.status(200).json({
       message: "Sucessfully logged in",
       token: token,
-      caprain: existingCaptain,
+      captain: existingCaptain,
     });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }
+};
+module.exports.captainProfile = async (req, res, next) => {
+  const captain = req.captain;
+  return res.status(200).json({
+    currentCaptain: captain,
+  });
+};
+module.exports.logoutCaptain = async (req, res, next) => {
+  const token = req.cookies.token || req.headers.authorization.split(" ")[1];
+  await blackListTokenModel.create({ token: token });
+  res.clearCookie("token");
+  res.status(200).json({ message: "Logged out sucessfully" });
 };
