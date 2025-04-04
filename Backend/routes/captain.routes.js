@@ -23,7 +23,7 @@ router.post(
       .isLength({ min: 1 })
       .withMessage("capacity must be of at least 1 person"),
     body("vehcile.type")
-      .isIn("car", "motorcycle", "auto")
+      .isIn(["car", "motorcycle", "auto"])
       .withMessage("Invalid vehcile type"),
   ],
   captainController.registerCaptain
